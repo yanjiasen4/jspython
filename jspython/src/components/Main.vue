@@ -36,6 +36,10 @@ export default {
     handleSuccess: function (res, file, fileList) {
       this.filename = res
       // this.filename = this.getDateString()
+      let url = `/api/run?filename=${this.filename}`
+      this.$http.get(url).then(function (res) {
+        console.log(res)
+      })
     },
     handleRun: function () {
       this.loading = true
