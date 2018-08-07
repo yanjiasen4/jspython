@@ -17,15 +17,15 @@ app.post('/', function (req, res) {
 })
 
 app.post('/file-upload', upload.single('file'), function (req, res) {
-  // console.log(req.file)
+  console.log(req.file)
   var temp_path = req.file.path;
   var originalnameSplit = req.file.originalname.split('.');
   var ext = '.' + originalnameSplit[originalnameSplit.length - 1];
   var target_path = req.file.path + ext;
   var _filename = req.file.filename + ext;
-  var filePath = '/upload/' + _filename;
+  var filePath = req.file.destination + _filename;
   console.log("Uploading: " + _filename);
-  var cmd = `python ./python/test.py ${_filename}`
+  var cmd = `unzip ${filePath} -d ${req.file.destination + req.file.filename}`
   fs.rename(temp_path, target_path, function(err,data) {
     // cb(null, { file_path: filePath });
       exec(cmd, function (error, stdout, stderr) {
@@ -33,6 +33,12 @@ app.post('/file-upload', upload.single('file'), function (req, res) {
         console.log(stdout);
       })
   });
+  res.send(_filename);
+})
+
+app.get('/run', function (req, res) {
+  var filename = req.query.filename
+  var cmd = `python3 ./python/test.py ${filename}`
 })
 
 app.get('/file-download', function (req, res) {
