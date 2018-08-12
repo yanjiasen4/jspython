@@ -61,7 +61,8 @@ export default {
       this.$http.get(url).then(function (res) {
         console.log(res)
         if (res.status === 200 && res.data === 'ok') {
-          _this.downloadLink = `/api/file-download?filename=${_this.filename}`
+          let downloadLink = `/api/file-download?filename=${_this.filename}`
+          _this.downloadLink = downloadLink
           _this.$Notice.success({
             title: '运行成功',
             desc: '点击下方"下载结果"链接可以下载运行结果表格'
