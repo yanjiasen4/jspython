@@ -1,7 +1,7 @@
 <template>
   <div>
     <Row class="upload">
-      <Upload :action="uploadUrl" :before-upload="handleUpload" :on-success="handleSuccess">
+      <Upload :action="uploadUrl" :format="accpetExt" :on-format-error="handleFormatError" :before-upload="handleUpload" :on-success="handleSuccess">
         <Button icon="ios-cloud-upload-outline">上传数据</Button>
       </Upload>
     </Row>
@@ -25,7 +25,8 @@ export default {
       uploadUrl: '/api/file-upload',
       downloadLink: '',
       filename: '',
-      loading: false
+      loading: false,
+      accpetExt: ['zip']
     }
   },
   methods: {
@@ -35,16 +36,45 @@ export default {
     },
     handleSuccess: function (res, file, fileList) {
       this.filename = res
-      // this.filename = this.getDateString()
+    },
+    handleFormatError: function (file, fileList) {
+      let filename = file.name
+      let filenameSplit = filename.split('.')
+      let ext = filenameSplit[filenameSplit.length - 1]
+      this.$Notice.error({
+        title: '不支持的文件格式 .' + ext,
+        desc: '目前支持的文件格式为.zip'
+      })
     },
     handleRun: function () {
+      if (this.filename === '') {
+        this.$Notice.error({
+          title: '无法运行',
+          desc: '请先上传数据集'
+        })
+        return
+      }
       this.loading = true
-      let delay = Math.random(0, 4)
+      // this.filename = this.getDateString()
+      let url = `/api/run?filename=${this.filename}`
       let _this = this
-      setTimeout(function () {
+      this.$http.get(url).then(function (res) {
+        console.log(res)
+        if (res.status === 200 && res.data === 'ok') {
+          let downloadLink = `/api/file-download?filename=${_this.filename}`
+          _this.downloadLink = downloadLink
+          _this.$Notice.success({
+            title: '运行成功',
+            desc: '点击下方"下载结果"链接可以下载运行结果表格'
+          })
+        } else {
+          _this.$Notice.error({
+            title: '运行出错',
+            desc: res.status + ' 运行算法出错，请重试'
+          })
+        }
         _this.loading = false
-        _this.downloadLink = `/api/file-download?filename=${this.filename}`
-      }, delay * 1000)
+      })
     },
     handleDownload: function () {
     },

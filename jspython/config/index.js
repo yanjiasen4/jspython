@@ -12,14 +12,13 @@ module.exports = {
     assetsPublicPath: '/',
     proxyTable: {
       '/api': {
-        target: 'http://127.0.0.1:3000/',
+        target: 'http://202.120.32.222:3000/',
         changeOrigin: true,
         pathRewrite: {
           '^/api': '/'
         }
       }
     },
-    cssSourceMap: false,
 
     // Various Dev Server settings
     host: 'localhost', // can be overwritten by process.env.HOST
@@ -65,7 +64,7 @@ module.exports = {
      * Source Maps
      */
 
-    productionSourceMap: true,
+    productionSourceMap: false,
     // https://webpack.js.org/configuration/devtool/#production
     devtool: '#source-map',
 
